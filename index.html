@@ -6,57 +6,106 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to right, #6dd5fa, #2980b9);
+      color: #333;
     }
-    .board {
+
+    h2 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    #board {
       display: grid;
       grid-template-columns: 150px repeat(3, 1fr);
       gap: 15px;
       margin-bottom: 20px;
     }
-    .column, .name {
-      background: #155f78;
-      color: white;
+
+    .name, .column {
+      border-radius: 10px;
       padding: 10px;
-      border-radius: 8px;
       text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background: #ffffffcc;
+      backdrop-filter: blur(5px);
+      transition: transform 0.2s;
     }
+
+    .name:hover, .column:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .column strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: #155f78;
+    }
+
     .task-list {
       min-height: 80px;
-      margin-top: 10px;
-      background: white;
+      background: #f9f9f9;
       border-radius: 8px;
-      padding: 5px;
-      color: black;
+      padding: 8px;
+      color: #333;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      transition: background 0.2s;
     }
+
     .task {
-      background: #cce5ff;
-      margin: 5px;
-      padding: 5px;
+      background: #fffae6;
+      margin: 5px 0;
+      padding: 6px 10px;
+      border-left: 4px solid #ffb347;
       border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
     }
+
+    .task:hover {
+      background: #ffe89c;
+      transform: scale(1.03);
+    }
+
     button {
       margin-top: 10px;
       padding: 6px 12px;
       border: none;
       border-radius: 5px;
-      background: #155f78;
+      background: #ff7e5f;
       color: white;
       cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
     }
+
     button:hover {
-      background: #0d4052;
+      background: #feb47b;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 800px) {
+      #board {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h2>Muluma Task Board</h2>
+  <h2>🚀 Muluma Task Board</h2>
 
   <div id="board"></div>
-  <button onclick="exportToExcel()">Export to Excel</button>
+  <div style="text-align:center;">
+    <button onclick="exportToExcel()">Export to Excel 📥</button>
+  </div>
 
   <script>
     const people = ["Nyiko", "Alfred", "Alice"];
@@ -75,9 +124,11 @@
       statuses.forEach(status => {
         const col = document.createElement("div");
         col.className = "column";
-        col.innerHTML = `<strong>${status}</strong>
+        col.innerHTML = `
+          <strong>${status}</strong>
           <div class="task-list" data-person="${name}" data-status="${status}"></div>
-          <button onclick="addTask('${name}','${status}')">+ Task</button>`;
+          <button onclick="addTask('${name}','${status}')">+ Add Task</button>
+        `;
         board.appendChild(col);
       });
     });
