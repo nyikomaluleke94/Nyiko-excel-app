@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Muluma Task Board</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: 150px repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .column, .name {
+      background: #155f78;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .task-list {
+      min-height: 80px;
+      margin-top: 10px;
+      background: white;
+      border-radius: 8px;
+      padding: 5px;
+      color: black;
+    }
+    .task {
+      background: #cce5ff;
+      margin: 5px;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #155f78;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0d4052;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Muluma Task Board</h2>
+
+  <div id="board"></div>
+  <button onclick="exportToExcel()">Export to Excel</button>
+
+  <script>
+    const people = ["Nyiko", "Alfred", "Alice"];
+    const statuses = ["Backlog", "In Progress", "Done"];
+    const board = document.getElementById("board");
+
+    // Build board
+    people.forEach(name => {
+      // Name column
+      const nameDiv = document.createElement("div");
+      nameDiv.className = "name";
+      nameDiv.innerText = name;
+      board.appendChild(nameDiv);
+
+      // Status columns
+      statuses.forEach(status => {
+        const col = document.createElement("div");
+        col.className = "column";
+        col.innerHTML = `<strong>${status}</strong>
+          <div class="task-list" data-person="${name}" data-status="${status}"></div>
+          <button onclick="addTask('${name}','${status}')">+ Task</button>`;
+        board.appendChild(col);
+      });
+    });
+
+    // Add task
+    function addTask(person, status) {
+      const taskText = prompt("Enter task:");
+      if (!taskText) return;
+      const list = document.querySelector(`.task-list[data-person="${person}"][data-status="${status}"]`);
+      const task = document.createElement("div");
+      task.className = "task";
+      task.innerText = taskText;
+      list.appendChild(task);
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      let data = [["Name", "Backlog", "In Progress", "Done"]];
+      
+      people.forEach(name => {
+        let row = [name];
+        statuses.forEach(status => {
+          const tasks = Array.from(document.querySelectorAll(`.task-list[data-person="${name}"][data-status="${status}"] .task`))
+                            .map(t => t.innerText).join(", ");
+          row.push(tasks);
+        });
+        data.push(row);
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Tasks");
+      XLSX.writeFile(workbook, "tasks.xlsx");
+    }
+  </script>
+
+</body>
+</html>
