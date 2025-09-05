@@ -2,168 +2,102 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Muluma Task Board</title>
+  <title>Muluma Timesheet</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: linear-gradient(to right, #6dd5fa, #2980b9);
-      color: #333;
-    }
-
-    h2 {
-      text-align: center;
-      color: white;
-      margin-bottom: 30px;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
-
-    #board {
-      display: grid;
-      grid-template-columns: 150px repeat(3, 1fr);
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .name, .column {
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      background: #ffffffcc;
-      backdrop-filter: blur(5px);
-      transition: transform 0.2s;
-    }
-
-    .name:hover, .column:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-
-    .column strong {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 1.1em;
-      color: #155f78;
-    }
-
-    .task-list {
-      min-height: 80px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      padding: 8px;
-      color: #333;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-      transition: background 0.2s;
-    }
-
-    .task {
-      background: #fffae6;
-      margin: 5px 0;
-      padding: 6px 10px;
-      border-left: 4px solid #ffb347;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-    }
-
-    .task:hover {
-      background: #ffe89c;
-      transform: scale(1.03);
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 5px;
-      background: #ff7e5f;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background: #feb47b;
-      transform: translateY(-2px);
-    }
-
-    @media (max-width: 800px) {
-      #board {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
 
-  <h2>🚀 Muluma Task Board</h2>
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <h1>Welcome to Muluma Timesheet</h1>
+  <p>Please enter your name to continue:</p>
+  <input type="text" id="username" placeholder="Your name">
+  <button onclick="login()">Login</button>
+</div>
 
-  <div id="board"></div>
+<!-- TIMESHEET APP -->
+<div id="appPage">
+  <h2>📊 Muluma Monthly Timesheet</h2>
+
+  <!-- HEADER SECTION -->
+  <div id="timesheetHeader">
+    <h3 style="text-align:center; margin:0;">MONTHLY TIMESHEET</h3>
+    <p style="text-align:center; font-weight:bold;">Jun 2025 - Jul 2025</p>
+
+    <table class="headerTable">
+      <tr>
+        <td><b>EMPLOYEE NAME:</b> <span id="employeeName">Name Surname</span></td>
+        <td><b>Employer:</b> Imerys</td>
+      </tr>
+      <tr>
+        <td><b>Approver:</b> <span id="approverName">___________</span></td>
+        <td><b>Signature:</b> ___________ &nbsp;&nbsp; <b>Date:</b> ___________</td>
+      </tr>
+    </table>
+  </div>
+  <br>
+
+  <!-- TIMESHEET TABLE -->
+  <table id="timesheet">
+    <thead>
+      <tr>
+        <th>NAME</th>
+        <th>W#</th>
+        <th>WEEK START</th>
+        <th>Backlog</th>
+        <th>In Progress</th>
+        <th>Done</th>
+        <th>WEEK END</th>
+        <th>WORK HOURS</th>
+        <th>SICK</th>
+        <th>LEAVE</th>
+        <th>HOLIDAY</th>
+        <th>OTHER</th>
+        <th>BILLABLE HOURS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input id="nameInput" placeholder="Your name"></td>
+        <td>1</td>
+        <td><input type="date"></td>
+        <td>
+          <div class="backlog"></div>
+          <input placeholder="New task...">
+          <button onclick="addTask(this)">➕ Add Task</button>
+        </td>
+        <td><div class="inprogress"></div></td>
+        <td><div class="done"></div></td>
+        <td><input type="date"></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" value="0" readonly></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="footer">
+        <td colspan="7">TOTAL HOURS</td>
+        <td id="totalWork">0</td>
+        <td id="totalSick">0</td>
+        <td id="totalLeave">0</td>
+        <td id="totalHoliday">0</td>
+        <td id="totalOther">0</td>
+        <td id="totalBillable">0</td>
+      </tr>
+    </tfoot>
+  </table>
+
   <div style="text-align:center;">
+    <button onclick="addRow()">➕ Add Row</button>
+    <button onclick="calculateTotals()">Calculate Totals</button>
     <button onclick="exportToExcel()">Export to Excel 📥</button>
   </div>
+</div>
 
-  <script>
-    const people = ["Nyiko", "Alfred", "Alice"];
-    const statuses = ["Backlog", "In Progress", "Done"];
-    const board = document.getElementById("board");
-
-    // Build board
-    people.forEach(name => {
-      // Name column
-      const nameDiv = document.createElement("div");
-      nameDiv.className = "name";
-      nameDiv.innerText = name;
-      board.appendChild(nameDiv);
-
-      // Status columns
-      statuses.forEach(status => {
-        const col = document.createElement("div");
-        col.className = "column";
-        col.innerHTML = `
-          <strong>${status}</strong>
-          <div class="task-list" data-person="${name}" data-status="${status}"></div>
-          <button onclick="addTask('${name}','${status}')">+ Add Task</button>
-        `;
-        board.appendChild(col);
-      });
-    });
-
-    // Add task
-    function addTask(person, status) {
-      const taskText = prompt("Enter task:");
-      if (!taskText) return;
-      const list = document.querySelector(`.task-list[data-person="${person}"][data-status="${status}"]`);
-      const task = document.createElement("div");
-      task.className = "task";
-      task.innerText = taskText;
-      list.appendChild(task);
-    }
-
-    // Export to Excel
-    function exportToExcel() {
-      let data = [["Name", "Backlog", "In Progress", "Done"]];
-      
-      people.forEach(name => {
-        let row = [name];
-        statuses.forEach(status => {
-          const tasks = Array.from(document.querySelectorAll(`.task-list[data-person="${name}"][data-status="${status}"] .task`))
-                            .map(t => t.innerText).join(", ");
-          row.push(tasks);
-        });
-        data.push(row);
-      });
-
-      const worksheet = XLSX.utils.aoa_to_sheet(data);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Tasks");
-      XLSX.writeFile(workbook, "tasks.xlsx");
-    }
-  </script>
-
+<script src="app.js"></script>
 </body>
 </html>
